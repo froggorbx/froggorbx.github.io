@@ -172,7 +172,28 @@ body{
 }
 
 #styleTitle::before{
-  content:none !important;
+  content:"";
+  position:absolute;
+
+  width:440px;
+  max-width:70%;
+  height:3px;
+
+  left:50%;
+  top:-14px;
+
+  transform:translateX(-50%);
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #53606a,
+    #a5afb6,
+    #53606a,
+    transparent
+  );
+
+  box-shadow:0 1px 5px #000;
 }
 
 .t-layer{
@@ -307,14 +328,10 @@ body{
     #ff00d9 100%
   );
 
-  background-size:200% 100%;
-
   -webkit-background-clip:text;
   background-clip:text;
   -webkit-text-fill-color:transparent;
   -webkit-text-stroke:0;
-
-  animation:titleRGB 3s linear infinite;
 
   text-shadow:none;
   z-index:3;
@@ -331,45 +348,24 @@ body{
   z-index:1;
 }
 
-/* tight rainbow glow hugging the letters, animated in antiphase */
+/* soft rainbow-ish glow hugging the letters - static, built with plain
+   text-shadow (not filter:blur + background-clip:text, which some
+   browsers fail to composite correctly on clipped gradient text) */
 #styleTitle[data-rarity="ultra"] .t-blink{
   display:flex;
 
-  background:linear-gradient(
-    90deg,
-    #ff0000 0%,
-    #ff7a00 14%,
-    #fff000 28%,
-    #25ff00 42%,
-    #00d9ff 56%,
-    #396cff 70%,
-    #9d39ff 84%,
-    #ff00d9 100%
-  );
+  color:transparent;
+  background:none;
 
-  background-size:200% 100%;
+  text-shadow:
+    0 0 16px rgba(255,0,0,.35),
+    0 0 16px rgba(255,240,0,.35),
+    0 0 16px rgba(37,255,0,.35),
+    0 0 16px rgba(0,217,255,.35),
+    0 0 16px rgba(157,57,255,.35),
+    0 0 16px rgba(255,0,217,.35);
 
-  -webkit-background-clip:text;
-  background-clip:text;
-  -webkit-text-fill-color:transparent;
-
-  animation:titleRGB 3s linear infinite reverse;
-
-  filter:blur(6px);
-  opacity:.85;
-
-  text-shadow:none;
   z-index:2;
-}
-
-@keyframes titleRGB{
-  0%{
-    background-position:0% 50%;
-  }
-
-  100%{
-    background-position:200% 50%;
-  }
 }
 
 /* =========================
@@ -399,7 +395,9 @@ body{
   z-index:2;
 }
 
-/* base fill: gradient, black (top) -> dark red #70081e (bottom), static */
+/* base fill: gradient, black (top) -> dark red #70081e (bottom), static.
+   Drop shadow is a plain font shadow at 50% opacity (not a separate
+   blurred ellipse layer) so it follows the letter shapes themselves. */
 #styleTitle[data-rarity="evo"] .t-base{
   background:linear-gradient(180deg,#000000 0%,#70081e 100%);
 
@@ -408,56 +406,27 @@ body{
   -webkit-text-fill-color:transparent;
   color:transparent;
 
-  text-shadow:none;
+  text-shadow:4px 6px 6px rgba(0,0,0,.5);
 
   z-index:3;
 }
 
-/* red glow halo sitting behind the letters (blurred duplicate of the
-   glyph shapes, plain solid red - not the outline's gradient), static
-   like the rest of the EVO treatment */
+/* red glow halo sitting behind the letters - static, built with plain
+   text-shadow (not filter:blur + background-clip:text, which some
+   browsers fail to composite correctly on clipped gradient text) */
 #styleTitle[data-rarity="evo"] .t-blink{
   display:flex;
 
-  color:#ff1a1a;
+  color:transparent;
   background:none;
 
-  filter:blur(10px);
-  opacity:.85;
+  text-shadow:0 0 16px rgba(255,26,26,.5);
 
-  text-shadow:none;
   z-index:0;
 }
 
-/* drop shadow: a blurred black ellipse sitting behind the letters
-   (not a copy of the glyph shapes), same look as the supplied
-   blurred-ellipse reference - static, no animation */
 #styleTitle[data-rarity="evo"] .t-shadow{
-  display:block;
-  position:absolute;
-
-  inset:auto;
-  left:50%;
-  top:64%;
-  width:68%;
-  height:30px;
-
-  transform:translate(-50%,-50%);
-
-  color:transparent;
-  text-shadow:none;
-
-  background:radial-gradient(
-    ellipse closest-side,
-    rgba(0,0,0,.9) 0%,
-    rgba(0,0,0,.55) 45%,
-    rgba(0,0,0,0) 100%
-  );
-
-  filter:blur(8px);
-  opacity:.85;
-
-  z-index:1;
+  display:none;
 }
 
 /* =========================
@@ -536,16 +505,6 @@ body{
     #0007ff,
     #ff00d1
   );
-
-  background-size:250% 100%;
-
-  animation:statRainbow 2.5s linear infinite;
-}
-
-@keyframes statRainbow{
-  to{
-    background-position:250% 0;
-  }
 }
 
 /* =========================
@@ -601,10 +560,7 @@ body{
     #ff00d1
   );
 
-  background-size:250% 100%;
   background-repeat:no-repeat;
-
-  animation:statRainbow 2.5s linear infinite;
 }
 
 /* =========================
@@ -636,10 +592,43 @@ body{
 
   color:#fff;
 
-  -webkit-text-stroke:3px #000;
-  paint-order:stroke fill;
-
-  text-shadow:0 1px 2px #000;
+  /* thin, evenly-rounded outline (ring of text-shadows) instead of
+     -webkit-text-stroke, which renders far too heavy on this italic
+     bold font in some browsers and can swallow the fill entirely */
+  text-shadow:
+    0.80px 0.00px 0 #000,
+    0.74px 0.31px 0 #000,
+    0.57px 0.57px 0 #000,
+    0.31px 0.74px 0 #000,
+    0.00px 0.80px 0 #000,
+    -0.31px 0.74px 0 #000,
+    -0.57px 0.57px 0 #000,
+    -0.74px 0.31px 0 #000,
+    -0.80px 0.00px 0 #000,
+    -0.74px -0.31px 0 #000,
+    -0.57px -0.57px 0 #000,
+    -0.31px -0.74px 0 #000,
+    -0.00px -0.80px 0 #000,
+    0.31px -0.74px 0 #000,
+    0.57px -0.57px 0 #000,
+    0.74px -0.31px 0 #000,
+    1.60px 0.00px 0 #000,
+    1.48px 0.61px 0 #000,
+    1.13px 1.13px 0 #000,
+    0.61px 1.48px 0 #000,
+    0.00px 1.60px 0 #000,
+    -0.61px 1.48px 0 #000,
+    -1.13px 1.13px 0 #000,
+    -1.48px 0.61px 0 #000,
+    -1.60px 0.00px 0 #000,
+    -1.48px -0.61px 0 #000,
+    -1.13px -1.13px 0 #000,
+    -0.61px -1.48px 0 #000,
+    -0.00px -1.60px 0 #000,
+    0.61px -1.48px 0 #000,
+    1.13px -1.13px 0 #000,
+    1.48px -0.61px 0 #000,
+    2px 3px 3px rgba(0,0,0,.5);
 
   pointer-events:none;
 }
@@ -1134,11 +1123,6 @@ button:hover{
 
   .name{
     font-size:22px;
-
-    -webkit-text-stroke:2.5px #000;
-    paint-order:stroke fill;
-
-    text-shadow:0 1px 2px #000;
   }
 
   .remove{
@@ -3528,32 +3512,6 @@ document.getElementById(
           (-0.04 * scaledFontSize) + 'px';
       }
 
-      /* drop shadow: blurred black ellipse behind the letters (not a
-         copy of the glyph shapes) - same look as the supplied
-         blurred-ellipse reference */
-      ctx.save();
-      ctx.filter = 'blur(' + (8*scale) + 'px)';
-
-      const ellW = Math.min(out.width * .8, scaledFontSize * 6);
-      const ellH = scaledFontSize * .28;
-      const ellY = centerY + scaledFontSize * .3;
-
-      const gEllipse =
-        ctx.createRadialGradient(
-          cX, ellY, 0,
-          cX, ellY, ellW/2
-        );
-
-      gEllipse.addColorStop(0,'rgba(0,0,0,.9)');
-      gEllipse.addColorStop(.45,'rgba(0,0,0,.55)');
-      gEllipse.addColorStop(1,'rgba(0,0,0,0)');
-
-      ctx.fillStyle = gEllipse;
-      ctx.beginPath();
-      ctx.ellipse(cX, ellY, ellW/2, ellH/2, 0, 0, Math.PI*2);
-      ctx.fill();
-      ctx.restore();
-
       /* thick, evenly-rounded flat 2D outline: #70081e (top) -> #de0558 (bottom) */
       const gOutline =
         ctx.createLinearGradient(
@@ -3568,7 +3526,9 @@ document.getElementById(
       ctx.strokeStyle = gOutline;
       ctx.strokeText(titleText, cX, centerY);
 
-      /* fill: gradient, black (top) -> dark red #70081e (bottom) */
+      /* fill: gradient, black (top) -> dark red #70081e (bottom), with a
+         plain 50%-opacity font drop shadow (not a separate blurred
+         ellipse) - matches the live on-screen text-shadow */
       const gFill =
         ctx.createLinearGradient(
           0, centerY - scaledFontSize/2,
@@ -3578,8 +3538,15 @@ document.getElementById(
       gFill.addColorStop(0,'#000000');
       gFill.addColorStop(1,'#70081e');
 
+      ctx.save();
+      ctx.shadowColor = 'rgba(0,0,0,.5)';
+      ctx.shadowBlur = 6 * scale;
+      ctx.shadowOffsetX = 4 * scale;
+      ctx.shadowOffsetY = 6 * scale;
+
       ctx.fillStyle = gFill;
       ctx.fillText(titleText, cX, centerY);
+      ctx.restore();
 
     }else if(rarity === 'secret'){
 
