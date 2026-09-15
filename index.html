@@ -133,6 +133,25 @@ body{
    TITLE
 ========================= */
 
+.titleLine{
+  width:440px;
+  max-width:70%;
+  height:3px;
+
+  margin:14px auto;
+
+  background:linear-gradient(
+    90deg,
+    transparent,
+    #53606a,
+    #a5afb6,
+    #53606a,
+    transparent
+  );
+
+  box-shadow:0 1px 5px #000;
+}
+
 #styleTitle{
   position:relative;
   margin:0;
@@ -144,56 +163,6 @@ body{
   align-items:flex-start;
 
   z-index:20;
-}
-
-#styleTitle::after{
-  content:"";
-  position:absolute;
-
-  width:440px;
-  max-width:70%;
-  height:3px;
-
-  left:50%;
-  bottom:28px;
-
-  transform:translateX(-50%);
-
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #53606a,
-    #a5afb6,
-    #53606a,
-    transparent
-  );
-
-  box-shadow:0 1px 5px #000;
-}
-
-#styleTitle::before{
-  content:"";
-  position:absolute;
-
-  width:440px;
-  max-width:70%;
-  height:3px;
-
-  left:50%;
-  top:-14px;
-
-  transform:translateX(-50%);
-
-  background:linear-gradient(
-    90deg,
-    transparent,
-    #53606a,
-    #a5afb6,
-    #53606a,
-    transparent
-  );
-
-  box-shadow:0 1px 5px #000;
 }
 
 .t-layer{
@@ -1094,9 +1063,9 @@ button:hover{
     height:105px;
   }
 
-  #styleTitle::after{
+  .titleLine{
     width:300px;
-    bottom:22px;
+    margin:10px auto;
   }
 
   .t-layer{
@@ -1505,12 +1474,16 @@ button:hover{
 
 <div id="app">
 
+  <div class="titleLine"></div>
+
   <h1 id="styleTitle" data-rarity="secret">
     <span class="t-layer t-shadow">Name</span>
     <span class="t-layer t-outline">Name</span>
     <span class="t-layer t-base">Name</span>
     <span class="t-layer t-blink">Name</span>
   </h1>
+
+  <div class="titleLine"></div>
 
   <div id="grid"></div>
 
@@ -2252,7 +2225,7 @@ function refreshOutlines(){
 
   }else if(rarity === 'secret'){
 
-    const radius = fontSize * 0.08;
+    const radius = fontSize * 0.04;
 
     const outlineColor =
       titleOutlineColor.value;
@@ -3189,7 +3162,6 @@ document.getElementById(
       .querySelectorAll('.name')
       .forEach(el => {
         el.style.fontSize = '24px';
-        el.style.webkitTextStroke = '3px #000';
       });
 
 
@@ -3555,12 +3527,12 @@ document.getElementById(
         "px 'Montserrat Black', Arial, sans-serif";
 
       /* single flat outline color, no gradient - same radius ratio
-         (fontSize * 0.08) used for the live on-screen ring-of-shadows
+         (fontSize * 0.04) used for the live on-screen ring-of-shadows
          outline, converted to an equivalent centered canvas stroke
          (only the outward half of the stroke shows once the fill is
          painted on top, so the stroke is drawn twice as wide) */
       ctx.lineWidth =
-        scaledFontSize * 0.16;
+        scaledFontSize * 0.08;
 
       ctx.strokeStyle =
         titleOutlineColor.value;
@@ -3592,6 +3564,47 @@ document.getElementById(
       ctx.fillText(titleText, cX, centerY);
 
     }
+
+    ctx.restore();
+
+
+    /* =========================
+       DIVIDER LINES (match the two fading horizontal lines framing
+       the name on the live page, which were previously left out of
+       the exported PNG entirely)
+    ========================= */
+
+    ctx.save();
+
+    const lineWidthPx =
+      Math.min(out.width * 0.7, 440 * scale);
+
+    const lineThickness =
+      3 * scale;
+
+    const lineX0 =
+      cX - lineWidthPx / 2;
+
+    const lineGrad =
+      ctx.createLinearGradient(
+        lineX0, 0, lineX0 + lineWidthPx, 0
+      );
+
+    lineGrad.addColorStop(0, 'rgba(83,96,106,0)');
+    lineGrad.addColorStop(.5, '#a5afb6');
+    lineGrad.addColorStop(1, 'rgba(83,96,106,0)');
+
+    ctx.fillStyle = lineGrad;
+
+    ctx.fillRect(
+      lineX0, titleH * 0.03,
+      lineWidthPx, lineThickness
+    );
+
+    ctx.fillRect(
+      lineX0, titleH * 0.97 - lineThickness,
+      lineWidthPx, lineThickness
+    );
 
     ctx.restore();
 
