@@ -1169,6 +1169,16 @@ button:hover{
 
 .tabPanel{
   display:none;
+
+  /* #pageContent is a column flexbox with align-items:center (not
+     stretch), so without an explicit width every tab panel shrinks
+     to fit its own widest row of content instead of a consistent
+     width - Secret's extra Gradient/Outline row is wider than
+     Ultra/Evo's content, so the whole panel (and everything centered
+     inside it: stats grid, controls) visibly narrowed on switching
+     rarity. Forcing full width here makes it consistent regardless
+     of which rarity's controls are currently showing. */
+  width:100%;
 }
 
 .tabPanel.active{
