@@ -3455,6 +3455,31 @@ document.getElementById(
        TITLE DRAW
     ========================= */
 
+    /* long names used to get cut off on both sides because the font
+       size was fixed while the PNG width is limited. Measure the text
+       with the exact font of the current rarity and shrink the font
+       size so the name (plus outline/glow/shadow margin) always fits */
+    const fitFontSize = () => {
+      const m = document.createElement('canvas').getContext('2d');
+      const fontFor = px =>
+        rarity === 'ultra'
+          ? 'italic 400 ' + px + "px 'Audiowide', Arial, sans-serif"
+          : rarity === 'evo'
+            ? '700 ' + px + "px 'Arian', Arial, sans-serif"
+            : '900 ' + px + "px 'Montserrat Black', Arial, sans-serif";
+      m.font = fontFor(scaledFontSize);
+      if(rarity === 'evo' && 'letterSpacing' in m){
+        m.letterSpacing = (-0.04 * scaledFontSize) + 'px';
+      }
+      const measured = m.measureText(titleText).width;
+      const sideMargin = 18 * scale;
+      const maxW = out.width - sideMargin * 2;
+      if(!measured || measured <= maxW) return scaledFontSize;
+      return Math.max(8, Math.floor(scaledFontSize * (maxW / measured)));
+    };
+
+    const fs = fitFontSize();
+
     ctx.save();
 
     ctx.textAlign =
@@ -3477,7 +3502,7 @@ document.getElementById(
     if(rarity === 'ultra'){
 
       ctx.font =
-        'italic 400 ' + scaledFontSize +
+        'italic 400 ' + fs +
         "px 'Audiowide', Arial, sans-serif";
 
       const gFill =
@@ -3519,19 +3544,19 @@ document.getElementById(
     }else if(rarity === 'evo'){
 
       ctx.font =
-        '700 ' + scaledFontSize +
+        '700 ' + fs +
         "px 'Arian', Arial, sans-serif";
 
       if('letterSpacing' in ctx){
         ctx.letterSpacing =
-          (-0.04 * scaledFontSize) + 'px';
+          (-0.04 * fs) + 'px';
       }
 
       /* thick, evenly-rounded flat 2D outline: #70081e (top) -> #de0558 (bottom) */
       const gOutline =
         ctx.createLinearGradient(
-          0, centerY - scaledFontSize/2,
-          0, centerY + scaledFontSize/2
+          0, centerY - fs/2,
+          0, centerY + fs/2
         );
 
       gOutline.addColorStop(0,'#70081e');
@@ -3546,8 +3571,8 @@ document.getElementById(
          ellipse) - matches the live on-screen text-shadow */
       const gFill =
         ctx.createLinearGradient(
-          0, centerY - scaledFontSize/2,
-          0, centerY + scaledFontSize/2
+          0, centerY - fs/2,
+          0, centerY + fs/2
         );
 
       gFill.addColorStop(0,'#000000');
@@ -3566,7 +3591,7 @@ document.getElementById(
     }else if(rarity === 'secret'){
 
       ctx.font =
-        '900 ' + scaledFontSize +
+        '900 ' + fs +
         "px 'Montserrat Black', Arial, sans-serif";
 
       /* single flat outline color, no gradient - same radius ratio
@@ -3575,7 +3600,7 @@ document.getElementById(
          (only the outward half of the stroke shows once the fill is
          painted on top, so the stroke is drawn twice as wide) */
       ctx.lineWidth =
-        scaledFontSize * 0.08;
+        fs * 0.08;
 
       ctx.strokeStyle =
         titleOutlineColor.value;
@@ -3585,8 +3610,8 @@ document.getElementById(
       ctx.fillStyle =
         paintCanvasGradient(
           ctx,
-          0, centerY - scaledFontSize/2,
-          0, centerY + scaledFontSize/2
+          0, centerY - fs/2,
+          0, centerY + fs/2
         );
 
       ctx.fillText(titleText, cX, centerY);
@@ -3594,14 +3619,14 @@ document.getElementById(
     }else{
 
       ctx.font =
-        '900 ' + scaledFontSize +
+        '900 ' + fs +
         "px 'Montserrat Black', Arial, sans-serif";
 
       ctx.fillStyle =
         paintCanvasGradient(
           ctx,
-          0, centerY - scaledFontSize/2,
-          0, centerY + scaledFontSize/2
+          0, centerY - fs/2,
+          0, centerY + fs/2
         );
 
       ctx.fillText(titleText, cX, centerY);
